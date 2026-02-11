@@ -15,4 +15,5 @@ frontend/
 
 use commands cd backend and node server.js 
 
-#in this project first i tried to use MongoDb database but coudnt complete due to dns connection issue later i changed this into postgree sql and thats why this package.json is in this still
+
+#in this project first i tried to use MongoDb database but coudnt complete due to dns connection issue later i changed this into postgree sql and thats why this package.json is in this still..
