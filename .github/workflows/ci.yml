@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Setup Node
@@ -18,11 +18,9 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        run: |
-          cd backend
-          npm install
+        run: npm install
+        working-directory: backend
 
-      - name: Start server check
-        run: |
-          cd backend
-          node server.js
+      - name: Run server
+        run: node server.js
+        working-directory: backend
