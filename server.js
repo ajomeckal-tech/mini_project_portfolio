@@ -9,60 +9,17 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Use DATABASE_URL if available (Recommended for Render)
-const pool = process.env.DATABASE_URL
-  ? new Pool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: {
-        rejectUnauthorized: false,
-      },
-    })
-  : new Pool({
-      user: process.env.DB_USER,
-      host: process.env.DB_HOST,
-      database: process.env.DB_NAME,
-      password: process.env.DB_PASSWORD,
-      port: 5432,
-    });
+// 🔥 Serve frontend files
+app.use(express.static("public"));
 
-// Test connection
-pool.query("SELECT NOW()", (err, res) => {
-  if (err) {
-    console.error("PostgreSQL connection error", err);
-  } else {
-    console.log("PostgreSQL connected at", res.rows[0].now);
-  }
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
 });
 
 app.get("/", (req, res) => {
   res.send("Backend running");
 });
 
-app.post("/contact", async (req, res) => {
-  const { name, email, message } = req.body;
-
-  if (!name || !email) {
-    return res.status(400).send("Name and email are required");
-  }
-
-  try {
-    const result = await pool.query(
-      "INSERT INTO messages(name, email, message) VALUES($1, $2, $3) RETURNING *",
-      [name, email, message]
-    );
-
-    res.status(201).json({
-      message: "Message saved!",
-      data: result.rows[0],
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Server error");
-  }
-});
-
-// IMPORTANT for Render
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
