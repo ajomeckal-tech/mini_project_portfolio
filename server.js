@@ -11,16 +11,16 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve frontend folder (index.html, css, js)
+// Serve frontend folder
 app.use(express.static("frontend"));
 
 /* ---------------- Database ---------------- */
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  ssl: process.env.NODE_ENV === "production"
+    ? { rejectUnauthorized: false }
+    : false,
 });
 
 // Test DB connection
@@ -34,7 +34,6 @@ pool.query("SELECT NOW()", (err, res) => {
 
 /* ---------------- Routes ---------------- */
 
-// Contact Form Route
 app.post("/contact", async (req, res) => {
   const { name, email, message } = req.body;
 
@@ -46,7 +45,7 @@ app.post("/contact", async (req, res) => {
 
   try {
     const result = await pool.query(
-      "INSERT INTO messages(name, email, message) VALUES($1, $2, $3) RETURNING *",
+      "INSERT INTO messages(name, email, message) VALUES($1,$2,$3) RETURNING *",
       [name, email, message]
     );
 
@@ -69,4 +68,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
-
