@@ -1,18 +1,15 @@
-
 const form = document.getElementById("contactForm");
 
 form.addEventListener("submit", function (event) {
   event.preventDefault();
 
-  // Get values from the form
   const name = form.elements[0].value;
   const email = form.elements[1].value;
   const message = form.elements[2].value;
 
   const data = { name, email, message };
 
-  // Send data to the backend running on port 5000
-  fetch("http://localhost:5000/contact", {
+  fetch("/contact", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -26,12 +23,12 @@ form.addEventListener("submit", function (event) {
     }
     return response.json();
   })
-  .then(function (result) {
-    alert("Message sent succesfully  ");
+  .then(function () {
+    alert("Message sent successfully");
     form.reset();
   })
   .catch(function (err) {
     console.error(err);
-    alert("Error occurred ");
+    alert("Error occurred");
   });
 });
