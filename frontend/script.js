@@ -32,3 +32,4 @@ form.addEventListener("submit", function (event) {
     alert("Error occurred");
   });
 });
+console.log("CI/CD working test");
