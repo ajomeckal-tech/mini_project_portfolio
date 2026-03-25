@@ -1,6 +1,7 @@
 const express = require("express");
 const { Pool } = require("pg");
 const cors = require("cors");
+const path = require("path");
 require("dotenv").config();
 
 const app = express();
@@ -10,9 +11,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Serve frontend folder (index.html, css, js)
-app.use(express.static("frontend"));
 
 /* ---------------- Database ---------------- */
 
@@ -34,7 +32,6 @@ pool.query("SELECT NOW()", (err, res) => {
 
 /* ---------------- Routes ---------------- */
 
-// Contact Form Route
 app.post("/contact", async (req, res) => {
   const { name, email, message } = req.body;
 
@@ -60,6 +57,23 @@ app.post("/contact", async (req, res) => {
       error: "Server error",
     });
   }
+});
+
+/* ---------------- Serve Frontend ---------------- */
+
+// 👇 THIS IS THE FIX
+const frontendPath = path.join(__dirname, "../frontend");
+
+app.use(express.static(frontendPath));
+
+// Root route
+app.get("/", (req, res) => {
+  res.sendFile(path.join(frontendPath, "index.html"));
+});
+
+// Handle all routes
+app.get("*", (req, res) => {
+  res.sendFile(path.join(frontendPath, "index.html"));
 });
 
 /* ---------------- Start Server ---------------- */
