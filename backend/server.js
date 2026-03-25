@@ -32,6 +32,7 @@ pool.query("SELECT NOW()", (err, res) => {
 
 /* ---------------- Routes ---------------- */
 
+// Contact Form Route
 app.post("/contact", async (req, res) => {
   const { name, email, message } = req.body;
 
@@ -61,8 +62,8 @@ app.post("/contact", async (req, res) => {
 
 /* ---------------- Serve Frontend ---------------- */
 
-// 👇 THIS IS THE FIX
-const frontendPath = path.join(__dirname, "../frontend");
+// ✅ IMPORTANT: frontend folder is inside backend
+const frontendPath = path.join(__dirname, "frontend");
 
 app.use(express.static(frontendPath));
 
@@ -71,8 +72,8 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));
 });
 
-// Handle all routes
-app.get("*", (req, res) => {
+// ✅ Catch-all (FIXED, no crash)
+app.use((req, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));
 });
 
