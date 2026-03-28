@@ -17,18 +17,21 @@ form.addEventListener("submit", function (event) {
     body: JSON.stringify(data)
   })
   .then(async function (response) {
+    const resData = await response.json(); // ✅ ALWAYS parse JSON
+
     if (!response.ok) {
-      const err = await response.text();
-      throw new Error(err);
+      throw new Error(resData.error || "Something went wrong");
     }
-    return response.json();
+
+    return resData;
   })
-  .then(function () {
-    alert("Message sent successfully");
+  .then(function (data) {
+    console.log("✅ Success:", data);
+    alert("Message sent successfully!");
     form.reset();
   })
   .catch(function (err) {
-    console.error(err);
-    alert("Error occurred");
+    console.error("❌ Error:", err.message);
+    alert(err.message); // ✅ show real error instead of generic one
   });
 });

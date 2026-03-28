@@ -34,6 +34,8 @@ pool.query("SELECT NOW()", (err, res) => {
 
 // Contact Form Route
 app.post("/contact", async (req, res) => {
+  console.log("📩 Incoming data:", req.body); // 🔍 DEBUG
+
   const { name, email, message } = req.body;
 
   if (!name || !email) {
@@ -48,21 +50,24 @@ app.post("/contact", async (req, res) => {
       [name, email, message]
     );
 
+    console.log("✅ Data inserted:", result.rows[0]); // 🔍 DEBUG
+
     res.status(201).json({
       message: "Message saved successfully!",
       data: result.rows[0],
     });
   } catch (err) {
     console.error("❌ Error inserting data:", err);
+
+    // 🔥 send real error to frontend (important for debugging)
     res.status(500).json({
-      error: "Server error",
+      error: err.message,
     });
   }
 });
 
 /* ---------------- Serve Frontend ---------------- */
 
-// ✅ IMPORTANT: frontend folder is inside backend
 const frontendPath = path.join(__dirname, "frontend");
 
 app.use(express.static(frontendPath));
@@ -72,7 +77,7 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));
 });
 
-// ✅ Catch-all (FIXED, no crash)
+// Catch-all route
 app.use((req, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));
 });
