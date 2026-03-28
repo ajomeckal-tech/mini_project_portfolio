@@ -17,7 +17,14 @@ form.addEventListener("submit", function (event) {
     body: JSON.stringify(data)
   })
   .then(async function (response) {
-    const resData = await response.json(); // ✅ ALWAYS parse JSON
+    let resData;
+
+    // ✅ Handle empty or invalid JSON safely
+    try {
+      resData = await response.json();
+    } catch (e) {
+      throw new Error("Server returned invalid response");
+    }
 
     if (!response.ok) {
       throw new Error(resData.error || "Something went wrong");
@@ -32,6 +39,6 @@ form.addEventListener("submit", function (event) {
   })
   .catch(function (err) {
     console.error("❌ Error:", err.message);
-    alert(err.message); // ✅ show real error instead of generic one
+    alert(err.message); // shows real error
   });
 });
