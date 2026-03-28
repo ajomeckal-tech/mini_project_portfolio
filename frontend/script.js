@@ -17,18 +17,28 @@ form.addEventListener("submit", function (event) {
     body: JSON.stringify(data)
   })
   .then(async function (response) {
-    if (!response.ok) {
-      const err = await response.text();
-      throw new Error(err);
+    let resData;
+
+    // ✅ Handle empty or invalid JSON safely
+    try {
+      resData = await response.json();
+    } catch (e) {
+      throw new Error("Server returned invalid response");
     }
-    return response.json();
+
+    if (!response.ok) {
+      throw new Error(resData.error || "Something went wrong");
+    }
+
+    return resData;
   })
-  .then(function () {
-    alert("Message sent successfully");
+  .then(function (data) {
+    console.log("✅ Success:", data);
+    alert("Message sent successfully!");
     form.reset();
   })
   .catch(function (err) {
-    console.error(err);
-    alert("Error occurred");
+    console.error("❌ Error:", err.message);
+    alert(err.message); // shows real error
   });
 });
